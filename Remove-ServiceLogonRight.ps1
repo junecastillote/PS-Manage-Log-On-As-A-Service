@@ -20,14 +20,15 @@ if ($index -gt -1) {
     $configIni = $configIni.Replace($originalString, $replacementString)
     $configIni | Out-File $tempConfigFile
     secedit /configure /db $tempDatabaseFile /cfg $tempConfigFile /areas USER_RIGHTS
+    # Clean up
+    $tempConfigFile, $tempDatabaseFile | ForEach-Object {
+        if (Test-Path $_) {
+            Remove-Item -Path $_ -Force -Confirm:$false
+        }
+    }
 }
 else {
     "The user account [$UserOrGroup] is not included in the 'Log on as a service' assignment. No action taken." | Out-Default
 }
 
-# Clean up
-$tempConfigFile, $tempDatabaseFile | ForEach-Object {
-    if (Test-Path $_) {
-        Remove-Item -Path $_ -Force -Confirm:$false
-    }
-}
+
